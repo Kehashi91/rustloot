@@ -1,29 +1,30 @@
 use rustloot::LootTable;
 use rustloot::Item;
 
+use std::error::Error;
+use std::fs::File;
+use std::io::BufReader;
+use std::path::Path;
+
 fn main() {
 	let mut rng = rand::thread_rng();
+	let items = read_items("items.json").unwrap();
 
-    let cmiks = Item { 
-    name: "cmiks",
-	value: 2,
-	weight: 0,
-	base_rarity: 0.25
-	};
-	let shell = Item { 
-    name: "łuska",
-	value: 1,
-	weight: 0,
-	base_rarity: 0.4
-	};
-	let pistol = Item { 
-    name: "m1911",
-	value: 30,
-	weight: 2,
-	base_rarity: 0.1
-	};
-
-	let table = LootTable::new("miasto", vec![&cmiks, &shell, &pistol]);
+	let table = LootTable::new("miasto", &items, 2);
+	println!("{:?}", table.roll(15, & mut rng));
 	println!("{:?}", table.roll(31, & mut rng));
-	println!("{:?}", table.roll(31, & mut rng));
+	let table2 = LootTable::new("miast2o", &items, 3);
+	println!("{:?}", table2.roll(15, & mut rng));
+	println!("{:?}", table2.roll(31, & mut rng));
 }
+
+fn read_items<P: AsRef<Path>>(path: P) -> Result<Vec<Item>, Box<Error>> {
+	let file = File::open(path)?;
+	let reader = BufReader::new(file);
+
+	let items = serde_json::from_reader(reader)?;
+
+	Ok(items)
+}
+
+
