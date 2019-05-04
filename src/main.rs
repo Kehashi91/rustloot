@@ -1,5 +1,4 @@
-use rustloot::LootTable;
-use rustloot::Item;
+use rustloot::{LootTable, Item, LootTableBuilders};
 
 use std::error::Error;
 use std::fs::File;
@@ -10,10 +9,13 @@ fn main() {
 	let mut rng = rand::thread_rng();
 	let items = read_items("items.json").unwrap();
 
-	let table = LootTable::new("miasto", &items, 2);
+	let builders = vec![LootTableBuilders::AddAll];
+	let builders2 = vec![LootTableBuilders::AddAll];
+
+	let table = LootTable::new("miasto", &items, 2, builders);
 	println!("{:?}", table.roll(15, & mut rng));
 	println!("{:?}", table.roll(31, & mut rng));
-	let table2 = LootTable::new("miast2o", &items, 3);
+	let table2 = LootTable::new("miast2o", &items, 3, builders2);
 	println!("{:?}", table2.roll(15, & mut rng));
 	println!("{:?}", table2.roll(31, & mut rng));
 }
